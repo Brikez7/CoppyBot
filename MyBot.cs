@@ -48,7 +48,9 @@ namespace TelegramBotExperiments
                     case "/gotext":
                         string path = "QRCodeToText.ru";
                         DecoderQRCode(botClient, message, path);
-                        // Похер файл всеровено открыт DeleteFile(path);
+                        DeleteFile(path);
+                        Console.WriteLine();
+                        // DeleteFile(path);// Похер файл всеровено открыт
                         return;
 
                     case "/goqrcode":
@@ -159,10 +161,10 @@ namespace TelegramBotExperiments
 
                 FileStream saveImageStream = new FileStream(path, FileMode.OpenOrCreate);
 
-                // await botClient.DownloadFileAsync(file.FilePath, saveImageStream);// из за асинхронности файл получается(в дальнейших методах) медленнее чем закачивается на пк.
+                await botClient.DownloadFileAsync(file.FilePath, saveImageStream);// из за асинхронности файл получается(в дальнейших методах) медленнее чем закачивается на пк.
                 // И мы получаем ситуацию при котрой на пк обрабатывается фото которое уже было скачено ранее(предыдущее) А фото которое нужно обработать загружается позже
 
-                await Task.WhenAny(new Task(async () => DownLoadFile(botClient, file, saveImageStream))); // это метод запускается осигнхронно и поэтому потом прроисходит конфликт доступа.
+                // await Task.WhenAny(new Task(async () => DownLoadFile(botClient, file, saveImageStream))); // это метод запускается осигнхронно и поэтому потом прроисходит конфликт доступа.
 
                 saveImageStream.Close();
                 saveImageStream.Dispose();
