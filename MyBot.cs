@@ -47,8 +47,8 @@ namespace TelegramBotExperiments
 
                     case "/gotext":
                         string path = "QRCodeToText.ru";
-                        DecoderQRCode(botClient, message, path);
-                        DeleteFile(path);
+                        Task.WhenAll(new Task(async () => DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path)), new Task(async () => DecoderQRCode(botClient, message, path)), new Task(async () => DeleteFile(path)));
+                        
                         Console.WriteLine();
                         // DeleteFile(path);// Похер файл всеровено открыт
                         return;
@@ -157,6 +157,8 @@ namespace TelegramBotExperiments
         {
             try
             {
+                Console.WriteLine("Пиздец Декодировке");
+
                 File file = await botClient.GetFileAsync(fileId);
 
                 FileStream saveImageStream = new FileStream(path, FileMode.OpenOrCreate);
@@ -164,7 +166,7 @@ namespace TelegramBotExperiments
                 await botClient.DownloadFileAsync(file.FilePath, saveImageStream);// из за асинхронности файл получается(в дальнейших методах) медленнее чем закачивается на пк.
                 // И мы получаем ситуацию при котрой на пк обрабатывается фото которое уже было скачено ранее(предыдущее) А фото которое нужно обработать загружается позже
 
-                // await Task.WhenAny(new Task(async () => DownLoadFile(botClient, file, saveImageStream))); // это метод запускается осигнхронно и поэтому потом прроисходит конфликт доступа.
+                // это метод запускается осигнхронно и поэтому потом прроисходит конфликт доступа.
 
                 saveImageStream.Close();
                 saveImageStream.Dispose();
@@ -179,6 +181,7 @@ namespace TelegramBotExperiments
         }
         private static void DeleteFile(string path)
         {
+            Console.WriteLine("Пиздец удаление");
             FileInfo fileInfo = new FileInfo(path);
             if (fileInfo.Exists)
             {
@@ -195,14 +198,14 @@ namespace TelegramBotExperiments
         {
             ToText = ToQRCode = false;
 
-            DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path);
-
             Bitmap QRCode = new Bitmap(path);
 
             QRCodeDecoder Decoder = new QRCodeDecoder();
             string Mess = Decoder.decode(new QRCodeBitmapImage(QRCode)); 
 
             QRCode.Dispose();
+
+            Console.WriteLine("ПиздецСообщ?");
 
             await botClient.SendTextMessageAsync(message.Chat, $"Ваш текст: {Mess}");
 
