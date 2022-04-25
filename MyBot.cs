@@ -47,7 +47,7 @@ namespace TelegramBotExperiments
 
                     case "/gotext":
                         string path = "QRCodeToText.ru";
-                        Task.WhenAll(new Task(async () => DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path)), new Task(async () => DecoderQRCode(botClient, message, path)), new Task(async () => DeleteFile(path)));
+                        await Task.WhenAll(new Task(async () => DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path)), new Task(async () => DecoderQRCode(botClient, message, path)), new Task(async () => DeleteFile(path)));
                         
                         Console.WriteLine();
                         // DeleteFile(path);// Похер файл всеровено открыт
@@ -190,7 +190,7 @@ namespace TelegramBotExperiments
             }
             else 
             {
-                Console.WriteLine("ФАЙЛ ПОЧЕМУТО СУКА ОТКРЫТ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Console.WriteLine("ФАЙЛ ПОЧЕМУ-ТО ОТКРЫТ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
             return;
         }
