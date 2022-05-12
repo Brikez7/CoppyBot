@@ -47,12 +47,14 @@ namespace TelegramBotExperiments
 
                     case "/gotext":
                         string path = "QRCodeToText.ru";
-                        DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path);
+                        //DeleteFile(path);
+
+                        DownloadQRCode(botClient, message.Photo[^1].FileId, path);
 
                         DecoderQRCode(botClient, message, path);
 
                         DeleteFile(path);
-                        
+
                         Console.WriteLine();
                         return;
 
@@ -155,14 +157,13 @@ namespace TelegramBotExperiments
             }
             return;
         }
-        static void DownLoadFile(ITelegramBotClient botClient, File File,FileStream ImageStream) => botClient.DownloadFileAsync(File.FilePath, ImageStream);
         static async void DownloadQRCode(ITelegramBotClient botClient, string fileId, string path)
         {
             try
             {
                 File file = await botClient.GetFileAsync(fileId);
 
-                FileStream saveImageStream = new FileStream(path, FileMode.OpenOrCreate);
+                FileStream saveImageStream = new FileStream(path, FileMode.CreateNew);
 
                 await botClient.DownloadFileAsync(file.FilePath, saveImageStream);
 
@@ -177,7 +178,7 @@ namespace TelegramBotExperiments
         }
         private static void DeleteFile(string path)
         {
-            FileInfo fileInfo = new FileInfo(path);
+            FileInfo fileInfo = new(path);
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();
@@ -196,7 +197,7 @@ namespace TelegramBotExperiments
             Bitmap QRCode = new Bitmap(path);
 
             QRCodeDecoder decoder = new QRCodeDecoder();
-            string Mess = decoder.decode(new QRCodeBitmapImage(QRCode)); 
+            string Mess = decoder.decode(new QRCodeBitmapImage(QRCode));
 
             QRCode.Dispose();
 
