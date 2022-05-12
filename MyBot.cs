@@ -47,11 +47,11 @@ namespace TelegramBotExperiments
 
                     case "/gotext":
                         string path = "QRCodeToText.ru";
-                        DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path))
+                        DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path);
 
-                        DecoderQRCode(botClient, message, path))
+                        DecoderQRCode(botClient, message, path);
 
-                        DeleteFile(path)));
+                        DeleteFile(path);
                         
                         Console.WriteLine();
                         return;
