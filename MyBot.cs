@@ -27,7 +27,7 @@ namespace TelegramBotExperiments
 
                 Change(message);
 
-                switch (Metods[index])
+                switch (Active[IndexActiv])
                 {
                     case "/Некорректная команда":
                         await ErrorCommand(botClient, message);
@@ -74,34 +74,34 @@ namespace TelegramBotExperiments
             {
                 if (ToText)
                 {
-                    index = 4;
+                    IndexActiv = 4;
                 }
                 else 
                 {
-                    index = 6;
+                    IndexActiv = 6;
                 }
             }
             else
             {
                 if (ToQRCode)
                 {
-                    index = 5;
+                    IndexActiv = 5;
                 }
                 else
                 {
                     switch (message.Text.ToString())
                     {
                         case "/goqrcode":
-                            index = 3;
+                            IndexActiv = 3;
                             break;
                         case "/start":
-                            index = 1;
+                            IndexActiv = 1;
                             break;
                         case "/gotext":
-                            index = 2;
+                            IndexActiv = 2;
                             break;
                         default:
-                            index = 0;
+                            IndexActiv = 0;
                             break;
                     }
                 }
