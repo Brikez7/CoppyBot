@@ -12,9 +12,9 @@ namespace TelegramBotExperiments
     public class MyBot
     {
         public static ITelegramBotClient bot;
-        public readonly static string[] Metods = new string[] { "/Некорректная команда", "/start", "/Mgotext", "/Mgoqrcode", "/gotext", "/goqrcode","/error" };
+        public readonly static string[] Active = new string[] { "/Некорректная команда", "/start", "/Mgotext", "/Mgoqrcode", "/gotext", "/goqrcode","/error" };
         private static bool ToText = false, ToQRCode = false;
-        private static int index = 0;
+        private static int IndexActiv = 0;
 
         static MyBot() => bot = new TelegramBotClient("5302452964:AAER1OTaCStBCRXnkRKyDCd4UdjtVQ88Gas");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -47,7 +47,11 @@ namespace TelegramBotExperiments
 
                     case "/gotext":
                         string path = "QRCodeToText.ru";
-                        await Task.WhenAll(new Task(async () => DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path)), new Task(async () => DecoderQRCode(botClient, message, path)), new Task(async () => DeleteFile(path)));
+                        DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path))
+
+                        DecoderQRCode(botClient, message, path))
+
+                        DeleteFile(path)));
                         
                         Console.WriteLine();
                         return;
@@ -162,14 +166,9 @@ namespace TelegramBotExperiments
 
                 FileStream saveImageStream = new FileStream(path, FileMode.OpenOrCreate);
 
-                await botClient.DownloadFileAsync(file.FilePath, saveImageStream);// из за асинхронности файл получается(в дальнейших методах) медленнее чем закачивается на пк.
-                // И мы получаем ситуацию при котрой на пк обрабатывается фото которое уже было скачено ранее(предыдущее) А фото которое нужно обработать загружается позже
-
-                // это метод запускается осигнхронно и поэтому потом прроисходит конфликт доступа.
+                await botClient.DownloadFileAsync(file.FilePath, saveImageStream);
 
                 saveImageStream.Close();
-                saveImageStream.Dispose();
-
                 return;
             }
             catch (Exception Error)
@@ -180,16 +179,15 @@ namespace TelegramBotExperiments
         }
         private static void DeleteFile(string path)
         {
-            Console.WriteLine("Пиздец удаление");
             FileInfo fileInfo = new FileInfo(path);
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();
-                Console.WriteLine("Файл что УДАЛЕН ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ5555");
+                Console.WriteLine("Файл что УДАЛЕН");
             }
             else 
             {
-                Console.WriteLine("ФАЙЛ ПОЧЕМУ-ТО ОТКРЫТ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Console.WriteLine("ФАЙЛ  ОТКРЫТ ");
             }
             return;
         }
@@ -199,12 +197,10 @@ namespace TelegramBotExperiments
 
             Bitmap QRCode = new Bitmap(path);
 
-            QRCodeDecoder Decoder = new QRCodeDecoder();
-            string Mess = Decoder.decode(new QRCodeBitmapImage(QRCode)); 
+            QRCodeDecoder decoder = new QRCodeDecoder();
+            string Mess = decoder.decode(new QRCodeBitmapImage(QRCode)); 
 
             QRCode.Dispose();
-
-            Console.WriteLine("ПиздецСообщ?");
 
             await botClient.SendTextMessageAsync(message.Chat, $"Ваш текст: {Mess}");
 
