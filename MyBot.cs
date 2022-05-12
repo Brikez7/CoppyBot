@@ -160,8 +160,6 @@ namespace TelegramBotExperiments
         {
             try
             {
-                Console.WriteLine("Пиздец Декодировке");
-
                 File file = await botClient.GetFileAsync(fileId);
 
                 FileStream saveImageStream = new FileStream(path, FileMode.OpenOrCreate);
