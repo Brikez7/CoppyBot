@@ -50,7 +50,6 @@ namespace TelegramBotExperiments
                         await Task.WhenAll(new Task(async () => DownloadQRCode(botClient, message.Photo[message.Photo.Length - 1].FileId, path)), new Task(async () => DecoderQRCode(botClient, message, path)), new Task(async () => DeleteFile(path)));
                         
                         Console.WriteLine();
-                        // DeleteFile(path);// Похер файл всеровено открыт
                         return;
 
                     case "/goqrcode":
